@@ -82,6 +82,7 @@ public slots:
 private slots:
     void socketConnected();
     void socketDisconnected();
+    void errorOccurred(QBluetoothSocket::SocketError error);
 
 private:
     QBluetoothServiceDiscoveryAgent *discoveryAgent;

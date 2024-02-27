@@ -120,7 +120,7 @@ void ServiceDiscoveryDialog::openSocket(){
     if(socket != NULL){
         qDebug()<<"openSocket()";
         socket->connectToService(
-            QBluetoothAddress(macAddr),QBluetoothUuid(QBluetoothUuid::SerialPort));
+	    QBluetoothAddress(macAddr),QBluetoothUuid(QBluetoothUuid::ServiceClassUuid::SerialPort));
     }
 }
 
@@ -130,8 +130,7 @@ void ServiceDiscoveryDialog::connectToServer(){
         socket = new QBluetoothSocket(QBluetoothServiceInfo::RfcommProtocol);
         connect(socket, SIGNAL(connected()), this, SLOT(socketConnected()));
         connect(socket, SIGNAL(disconnected()), this, SLOT(socketDisconnected()));
-        connect(socket, static_cast<void (QBluetoothSocket::*)(QBluetoothSocket::SocketError)>(&QBluetoothSocket::error),
-                [=](QBluetoothSocket::SocketError error){ qDebug() << "CelluloBluetooth socket error: " << error; });
+	connect(socket, SIGNAL(errorOccurred(QBluetoothSocket::SocketError)), this, SLOT(errorOccurred(QBluetoothSocket::SocketError)));
 
         openSocket();
     }
@@ -152,8 +151,13 @@ void ServiceDiscoveryDialog::socketConnected(){
     //ui->list->addItem("socketConnected()");
     emit connected(macAddr);
 }
+
 void ServiceDiscoveryDialog::socketDisconnected(){
     qDebug()<<"socketDisconnected()"<<macAddr;
+}
+
+void ServiceDiscoveryDialog::errorOccurred(QBluetoothSocket::SocketError error) {
+    qDebug() << "Bluetooth socket errorOccurred: " << error;
 }
 
 
